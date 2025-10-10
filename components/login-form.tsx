@@ -44,13 +44,13 @@ export function LoginForm() {
       if (data.success) {
         setMessage(data.message)
         setMessageType("success")
-        // Aquí puedes redirigir al usuario o realizar otras acciones después del login exitoso
+        // Redirigir al dashboard después del login exitoso
         console.log("Login exitoso:", data)
         
-        // Opcional: Redirigir después de un delay
+        // Redirigir después de un delay para mostrar el mensaje de éxito
         setTimeout(() => {
-          // window.location.href = '/dashboard' // Descomenta si tienes una página de dashboard
-        }, 2000)
+          window.location.href = '/dashboard'
+        }, 1500)
       } else {
         setMessage(data.message)
         setMessageType("error")

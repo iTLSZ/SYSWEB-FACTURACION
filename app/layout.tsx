@@ -19,9 +19,9 @@ const quicksand = Quicksand({
 })
 
 export const metadata: Metadata = {
-  title: "SYSWEB - COPETRAN",
+  title: "SYSWEB - FACTURACIÓN",
   description: "Sistema de Facturación Copetran",
-  generator: "v0.app",
+  generator: "LALS",
 }
 
 export const viewport: Viewport = {
