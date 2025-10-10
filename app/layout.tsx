@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Poppins } from "next/font/google"
 import { Quicksand } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
@@ -22,12 +22,13 @@ export const metadata: Metadata = {
   title: "SYSWEB - COPETRAN",
   description: "Sistema de Facturación Copetran",
   generator: "v0.app",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default function RootLayout({
