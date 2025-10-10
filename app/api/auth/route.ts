@@ -1,3 +1,4 @@
+import { Console } from 'console'
 import { NextRequest, NextResponse } from 'next/server'
 
 // Deshabilitar verificación SSL en desarrollo (solo para testing)
@@ -70,12 +71,18 @@ async function validateUser(username: string, password: string, token: string): 
       const https = require('https')
       
       // Formatear los datos como en el ejemplo original
-      const formattedUsername = username.padEnd(15).substring(0, 15)
-      const formattedPassword = password.padEnd(15).substring(0, 15)  
-      const postData = `${formattedUsername}${formattedPassword}              `
+      const formattedUsername = username.padEnd(20)
+      const formattedPassword = password.padEnd(20)
+      const postData = `${formattedUsername}${formattedPassword}`
 
+      console.log('Longitud de los datos formateados:', formattedUsername.length);
+      console.log('Longitud de los datos formateados:', formattedPassword.length);
       console.log('Datos formateados:', postData)
+      console.log('Longitud de los datos formateados:', postData.length);
       console.log('Token usado:', token)
+      console.log('usuario:', postData.substring(0, 20));
+      console.log('contraseña:', postData.substring(20, 40));
+
 
       const options = {
         method: 'GET',
@@ -83,7 +90,8 @@ async function validateUser(username: string, password: string, token: string): 
         path: '/nuevo/api_val_user.php/',
         headers: {
           'Content-Type': 'text/plain',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Length': Buffer.byteLength(postData)
         },
         maxRedirects: 20,
         rejectUnauthorized: false // Para manejar SSL
@@ -101,23 +109,60 @@ async function validateUser(username: string, password: string, token: string): 
           const responseText = body.toString()
           console.log('Respuesta de validación:', responseText)
 
-          // Interpretar la respuesta
-          if (responseText.includes('1') || responseText.trim() === '1' || responseText.includes('success')) {
-            resolve({
-              success: true,
-              message: '¡Bienvenido al sistema COPETRAN! Credenciales válidas.',
-              data: responseText
-            })
-          } else if (responseText.includes('0') || responseText.includes('error') || responseText.includes('invalid')) {
-            resolve({
-              success: false,
-              message: 'Credenciales inválidas. Por favor, verifica tu usuario y contraseña.',
-            })
-          } else {
-            resolve({
-              success: false,
-              message: `Respuesta inesperada del servidor: ${responseText}`,
-            })
+          try {
+            // Intentar parsear como JSON
+            const jsonResponse = JSON.parse(responseText)
+            console.log('JSON parseado:', jsonResponse)
+            console.log('Indicador recibido:', jsonResponse.indicador)
+            // Verificar el indicador de la respuesta
+            if (jsonResponse.indicador >= 1) {
+              // Código 1 o mayor = acceso permitido
+              resolve({
+                success: true,
+                message: '¡Bienvenido al sistema COPETRAN! Credenciales válidas.',
+                data: jsonResponse
+              })
+            } else if (jsonResponse.indicador < 0) {
+              // Código menor a 0 = acceso denegado
+              resolve({
+                success: false,
+                message: jsonResponse.descrip || 'Credenciales inválidas o usuario no existe.',
+                data: jsonResponse
+              })
+            } else {
+              // Código 0 = caso especial
+              resolve({
+                success: false,
+                message: jsonResponse.descrip || 'Acceso denegado.',
+                data: jsonResponse
+              })
+            }
+          } catch (parseError) {
+            console.log('No es JSON válido, procesando como texto plano')
+            
+            // Fallback para respuestas que no son JSON
+            const numericValue = parseInt(responseText.trim())
+            if (!isNaN(numericValue)) {
+              if (numericValue >= 1) {
+                resolve({
+                  success: true,
+                  message: '¡Bienvenido al sistema COPETRAN! Credenciales válidas.',
+                  data: responseText
+                })
+              } else {
+                resolve({
+                  success: false,
+                  message: 'Credenciales inválidas. Por favor, verifica tu usuario y contraseña.',
+                  data: responseText
+                })
+              }
+            } else {
+              resolve({
+                success: false,
+                message: `Respuesta inesperada del servidor: ${responseText}`,
+                data: responseText
+              })
+            }
           }
         })
 
