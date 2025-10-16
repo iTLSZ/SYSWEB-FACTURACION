@@ -68,8 +68,8 @@ export async function POST(request: NextRequest) {
 
       await pool.execute(
         `INSERT INTO NEWRECIBE 
-         (AssetExtra, AssetName2, AssetExtra2, ArrivalDate, DepartureTime, DepartFrom, Distance) 
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+         (nequipo, dconductor, nconductor, fecha, hm, nompuni , km, sentido) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           parseNumber(AssetExtra),
           AssetName2 || null,
@@ -77,15 +77,16 @@ export async function POST(request: NextRequest) {
           formattedDate,
           DepartureTime || null,
           DepartFrom || null,
-          parseNumber(Distance), // Distancia incluida en el registro de salida
+          parseNumber(Distance), 
+          "i", // Indicar que es un registro de salida
         ],
       )
       insertedCount++
 
       await pool.execute(
         `INSERT INTO NEWRECIBE 
-         (AssetExtra, AssetName2, AssetExtra2, ArrivalDate, DepartureTime, DepartFrom, Distance) 
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+         (nequipo, dconductor, nconductor, fecha, hm, nompuni, km, sentido) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           parseNumber(AssetExtra),
           AssetName2 || null,
@@ -93,7 +94,8 @@ export async function POST(request: NextRequest) {
           formattedDate,
           ArrivalTime || null, // La hora de llegada del CSV va en la columna DepartureTime
           ArriveAt || null, // El punto de llegada del CSV va en la columna DepartFrom
-          null, // La distancia es NULL para el registro de llegada
+          null, // No asignamos el campo Distance (km) para el registro de llegada
+          "f", // Indicar que es un registro de llegada
         ],
       )
       insertedCount++
