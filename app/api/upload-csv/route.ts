@@ -123,4 +123,5 @@ export async function POST(request: NextRequest) {
 // Retornar 405 para métodos que no sean POST
 export async function GET() {
   return NextResponse.json({ error: "Método no permitido. Use POST." }, { status: 405 })
+  
 }

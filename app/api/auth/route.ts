@@ -62,6 +62,8 @@ async function getAuthToken(): Promise<string | null> {
     console.error('Error en getAuthToken:', error)
     return null
   }
+
+  
 }
 
 // Función para validar las credenciales del usuario usando Node.js HTTPS

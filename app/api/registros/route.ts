@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const [rows] = await pool.execute(
       `SELECT 
-        nequipo AS AssetExtra,
+        nequipo AS AssetExtra, 
         dconductor AS AssetName2,
         nconductor AS AssetExtra2,
         fecha AS ArrivalDate,
@@ -28,4 +28,6 @@ export async function GET() {
       { status: 500 },
     )
   }
+  
+
 }
